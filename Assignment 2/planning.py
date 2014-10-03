@@ -63,8 +63,8 @@ def slopeOfAnEdge(edge):
 
 
 #function to identify and remove all the illegal edges from the graph
-def removeIllegalEdges(graphEdge,graph_sample):
-	i = 0
+def removeIllegalEdges(graphEdge,graph_sample):				# currently checking only for the edges
+	i = 0								# that lie completely inside a polygon
 	dynamicLengthGraphEdge = len(graphEdge)
 	while (i < (dynamicLengthGraphEdge-1)):
 		for j,k in zip(range(2,len(graph_sample)-2,2),range(3,len(graph_sample)-2,2)):
@@ -85,19 +85,59 @@ def getEdges(graph_sample):
 		for j in range(i+1,len(graph_sample)):
 			graphEdge.append([graph_sample[i],graph_sample[j]])
 
+
+#To check if three points are aligned in clockwise or anticlockwise orientation. Also if they are collinear.
+def arePointsCCW(point1,point2,point3):
+	if (((point2[0] - point1[0])*(point3[1]-point2[1]) - (point3[0]-point2[0])*(point2[1]-point1[1])) == 0):
+		return False
+	else:
+		return (((point2[0] - point1[0])*(point3[1]-point2[1]) - (point3[0]-point2[0])*(point2[1]-point1[1])) < 0)
+
+
+#rePointsCCW(line1[0],line1[1],line2[0]))function to check if two line segments are intersecting or not
+def areTwoLinesIntersecting(line1,line2):
+	
+''' FOR TESTING
+	print "Point 3 and 4  wrt point 1 and 2 : ",(arePointsCCW(line1[0],line1[1],line2[0]))^(arePointsCCW(line1[0],line1[1],line2[1]))
+	print "Point 1 and 2 with respect to 3 and 4 : ",(arePointsCCW(line2[0],line2[1],line1[0]))^(arePointsCCW(line2[0],line2[1],line1[1]))
+	print "arePointsCCW(line1[0],line1[1],line2[0]) : ",arePointsCCW(line1[0],line1[1],line2[0])
+	print "arePointsCCW(line1[0],line1[1],line2[1]) : ",arePointsCCW(line1[0],line1[1],line2[1])
+	print "arePointsCCW(line2[0],line2[1],line1[0]) : ",arePointsCCW(line2[0],line2[1],line1[0])
+	print "arePointsCCW(line2[0],line2[1],line1[1]) : ",arePointsCCW(line2[0],line2[1],line1[1])'''
+	return ((arePointsCCW(line1[0],line1[1],line2[0]))^(arePointsCCW(line1[0],line1[1],line2[1]))) and ((arePointsCCW(line2[0],line2[1],line1[0]))^(arePointsCCW(line2[0],line2[1],line1[1]))) 
+	'''
+	if (arePointsCCW(line1[0],line1[1],line2[0]) and not(arePointsCCW(line1[0],line1[1],line2[1]))) and  (not((arePointsCCW(line1[0],line1[1],line2[0])) and arePointsCCW(line1[0],line1[1],line2[1]))):
+		return (2>1)
+	else:
+		return (1>2)
+	'''
 		
 graphEdge = []
 getEdges(graph_sample)
 
-print "EDGES :",graphEdge
+#print "EDGES :",graphEdge
 #print "EDGE[0][0][0] : ",graphEdge[0][0][0]
 
-removeIllegalEdges(graphEdge,graph_sample)
-print "EDGES after removing illegal ones :",graphEdge	
+#removeIllegalEdges(graphEdge,graph_sample)
+#print "EDGES after removing illegal ones :",graphEdge	
 
-print "Lenght of edge ",graphEdge[1]," is ",lengthOfAnEdge(graphEdge[1])
-print "Slope of edge ",graphEdge[1]," is ",slopeOfAnEdge(graphEdge[1])
-plotSamplePoints(graph_sample)
+#print "Lenght of edge ",graphEdge[1]," is ",lengthOfAnEdge(graphEdge[1])
+#print "Slope of edge ",graphEdge[1]," is ",slopeOfAnEdge(graphEdge[1])
+#plotSamplePoints(graph_sample)
+
+point1 = [1,2]
+point2 = [4,3]
+point3 = [2,6]
+point4 = [4,3]
+line1 = [point1,point2]
+line2 = [point3,point4]
+print line1[0]
+print line1[1]
+print line2[0]
+print line2[1]
+print arePointsCCW(point1,point2,point3)
+print "test : ",arePointsCCW((2,1),(6,4),(3,3))
+print "Are line segments intersecting ",areTwoLinesIntersecting(line1,line2)
 
 def getSizeOfGraphEdgeList(num):
         factorial = 1
