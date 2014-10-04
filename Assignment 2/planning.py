@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 start = [0.0,0.0,0.0]
 goal = [1.0,1.0,1.57]
 obstacles = [(0.4,0.6),(0.4,0.4),(0.6,0.4),(0.6,0.6)]
+obstacleEdge = []
+graphEdge = []
 
 node = [start,goal,obstacles]
 
@@ -29,8 +31,22 @@ for i in range(3):
 print "graph Samples:  ",graph_sample
 print "Number of samples formed : ",len(graph_sample)
 
+
 '''graph_edges = [(graph_sample[0],graph_sample[1]),(graph_sample[0],graph_sample[2]),(graph_sample[0],graph_sample[3]),(graph_sample[0],graph_sample[4]),(graph_sample[0],graph_sample[5])]
 '''
+
+
+#Function to get edges, out of all the edges of the graph, that correspond to obstacle sides
+def getEdgeAsObstacleSide(graph_sample,obstacleEdge):
+	for i in range(2,len(graph_sample)):
+        	for j in range(i+1,len(graph_sample)):
+                	obstacleEdge.append([graph_sample[i],graph_sample[j]])
+
+
+	return removeIllegalEdges(obstacleEdge,graph_sample)
+	
+	
+
 
 #to plot a list of (x,y) coordinates on graph
 def plotSamplePoints(listxy):
@@ -96,7 +112,7 @@ def arePointsCCW(point1,point2,point3):
 
 #rePointsCCW(line1[0],line1[1],line2[0]))function to check if two line segments are intersecting or not
 def areTwoLinesIntersecting(line1,line2):
-	
+	return ((arePointsCCW(line1[0],line1[1],line2[0]))^(arePointsCCW(line1[0],line1[1],line2[1]))) and ((arePointsCCW(line2[0],line2[1] ,line1[0]))^(arePointsCCW(line2[0],line2[1],line1[1])))	
 ''' FOR TESTING
 	print "Point 3 and 4  wrt point 1 and 2 : ",(arePointsCCW(line1[0],line1[1],line2[0]))^(arePointsCCW(line1[0],line1[1],line2[1]))
 	print "Point 1 and 2 with respect to 3 and 4 : ",(arePointsCCW(line2[0],line2[1],line1[0]))^(arePointsCCW(line2[0],line2[1],line1[1]))
@@ -104,17 +120,17 @@ def areTwoLinesIntersecting(line1,line2):
 	print "arePointsCCW(line1[0],line1[1],line2[1]) : ",arePointsCCW(line1[0],line1[1],line2[1])
 	print "arePointsCCW(line2[0],line2[1],line1[0]) : ",arePointsCCW(line2[0],line2[1],line1[0])
 	print "arePointsCCW(line2[0],line2[1],line1[1]) : ",arePointsCCW(line2[0],line2[1],line1[1])'''
-	return ((arePointsCCW(line1[0],line1[1],line2[0]))^(arePointsCCW(line1[0],line1[1],line2[1]))) and ((arePointsCCW(line2[0],line2[1],line1[0]))^(arePointsCCW(line2[0],line2[1],line1[1]))) 
-	'''
+	
+'''
 	if (arePointsCCW(line1[0],line1[1],line2[0]) and not(arePointsCCW(line1[0],line1[1],line2[1]))) and  (not((arePointsCCW(line1[0],line1[1],line2[0])) and arePointsCCW(line1[0],line1[1],line2[1]))):
 		return (2>1)
 	else:
 		return (1>2)
 	'''
 		
-graphEdge = []
 getEdges(graph_sample)
-
+removeIllegalEdges(graphEdge,graph_sample)
+print "Getting graph edges that are obstacle sides : ",getEdgeAsObstacleSide(graph_sample,obstacleEdge)
 #print "EDGES :",graphEdge
 #print "EDGE[0][0][0] : ",graphEdge[0][0][0]
 
@@ -125,6 +141,7 @@ getEdges(graph_sample)
 #print "Slope of edge ",graphEdge[1]," is ",slopeOfAnEdge(graphEdge[1])
 #plotSamplePoints(graph_sample)
 
+'''All the tests done to test intersection of two lines...runs successfully!!!
 point1 = [1,2]
 point2 = [4,3]
 point3 = [2,6]
@@ -137,7 +154,7 @@ print line2[0]
 print line2[1]
 print arePointsCCW(point1,point2,point3)
 print "test : ",arePointsCCW((2,1),(6,4),(3,3))
-print "Are line segments intersecting ",areTwoLinesIntersecting(line1,line2)
+print "Are line segments intersecting ",areTwoLinesIntersecting(line1,line2)'''
 
 def getSizeOfGraphEdgeList(num):
         factorial = 1
