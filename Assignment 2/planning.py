@@ -34,6 +34,47 @@ print "Number of samples formed : ",len(graph_sample)
 
 '''graph_edges = [(graph_sample[0],graph_sample[1]),(graph_sample[0],graph_sample[2]),(graph_sample[0],graph_sample[3]),(graph_sample[0],graph_sample[4]),(graph_sample[0],graph_sample[5])]
 '''
+#Function to read the .mp file and parse it correctly to get all the coordinates, Start, Goal and Obstacles
+def getTestFileInput(nameOfFile):
+	file_handle = open(nameOfFile,'r')
+	lines_list = file_handle.readlines()
+	sample_list = []
+	single_char = ""
+	skipThreeStepFlag = 0
+	for i in range(1, len(lines_list)-1,4):
+		if(skipThreeStepFlag == 1):
+			skipThreeStepFlag = 0
+			i = i + 3
+		for j in range((len(lines_list[i])-1)):
+			if(i <= 5):
+				if(lines_list[i][j]!=' '):
+					single_char += lines_list[i][j]
+
+				if(lines_list[i][j] == ' ' or lines_list[i][j+1] == '\n'):
+					sample_list.append(single_char)
+					single_char = ""
+
+			if(i>5 and i < (len(lines_list)-2)):
+				for m in range(i,i+4):
+				#	print "m = ",m
+				#       print "len(lines_list[i]) : ",len(lines_list[i])
+					for n in range((len(lines_list[m])-1)):
+						#print "n : ",n
+						if(lines_list[m][n]!=' '):
+							single_char += lines_list[m][n]
+						#       print "m = ",m,"and n = ",n,"value of single_char is = ",single_char 
+						if(lines_list[m][n] == ' ' or lines_list[m][n+1] == '\n'):
+							sample_list.append(single_char)
+							single_char = ""
+
+				skipThreeStepFlag = 1
+				break
+
+		if(i == (len(lines_list) - (len(lines_list)%4))):
+	                break
+
+
+	return sample_list
 
 
 #Function to get edges, out of all the edges of the graph, that correspond to obstacle sides
@@ -131,6 +172,7 @@ def areTwoLinesIntersecting(line1,line2):
 getEdges(graph_sample)
 removeIllegalEdges(graphEdge,graph_sample)
 print "Getting graph edges that are obstacle sides : ",getEdgeAsObstacleSide(graph_sample,obstacleEdge)
+print getTestFileInput('test3.mp')
 #print "EDGES :",graphEdge
 #print "EDGE[0][0][0] : ",graphEdge[0][0][0]
 
