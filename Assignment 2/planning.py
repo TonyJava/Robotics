@@ -2,13 +2,13 @@ import math
 import matplotlib.pyplot as plt
 
 
-start = [0.0,0.0,0.0]
-goal = [1.0,1.0,1.57]
-obstacles = [(0.4,0.6),(0.4,0.4),(0.6,0.4),(0.6,0.6)]
+start = []
+goal = []
+obstacles = []
 obstacleEdge = []
 graphEdge = []
 
-node = [start,goal,obstacles]
+#nodes = [start,goal,obstacles]
 
 #print node[2][2]
 #print len(obstacles)
@@ -18,18 +18,25 @@ graph_sample=[0.0]*2
 #print graph_sample
 #print "node[2][0]: ",node[2][0]
 #for i in range(2+len(obstacles)+1):
-for i in range(3):
-	if(i<2):
-		graph_sample[i] = ((node[i][0],node[i][1]))
-	elif(i>=2):
-		for j in range(len(obstacles)):
-#			print "j = ",j
-#			print "node[2][0] : ",node[2][0]
-			graph_sample.append(node[2][j])
 
 
-print "graph Samples:  ",graph_sample
-print "Number of samples formed : ",len(graph_sample)
+#function to get the samples for the graph.
+#sampling is done for visibility graph
+def getGraphSamples(node):
+	for i in range(3):
+		if(i<2):
+			graph_sample[i] = ((node[i][0],node[i][1]))
+		elif(i>=2):
+			for j in range(len(obstacles)):
+	#			print "j = ",j
+	#			print "node[2][0] : ",node[2][0]
+				graph_sample.append(node[2][j])
+	
+	return graph_sample
+
+
+#print "graph Samples:  ",graph_sample
+#print "Number of samples formed : ",len(graph_sample)
 
 
 '''graph_edges = [(graph_sample[0],graph_sample[1]),(graph_sample[0],graph_sample[2]),(graph_sample[0],graph_sample[3]),(graph_sample[0],graph_sample[4]),(graph_sample[0],graph_sample[5])]
@@ -75,6 +82,28 @@ def getTestFileInput(nameOfFile):
 
 
 	return sample_list
+
+
+#function to extract Start, Goal, and Obstacle coordinates from the list of coorinates received from the parser
+def getAllCoordinates(sample_list):
+	
+	nodes = []
+	skipNextIterationFlag = 0			# to skip one iteration so that coordinates of obstacles 
+							# can be shown as combinations of (x,y)
+	for i in range(len(sample_list)):
+		if(skipNextIterationFlag == 1):
+			skipNextIterationFlag = 0
+			continue
+		if(i<=2):
+			start.append(float(sample_list[i]))
+		elif(i>2 and i <=5):
+			goal.append(float(sample_list[i]))
+		elif(i>5):
+			obstacles.append((float(sample_list[i]),float(sample_list[i+1])))	
+			skipNextIterationFlag = 1
+	
+	nodes = [start,goal,obstacles]
+	return nodes
 
 
 #Function to get edges, out of all the edges of the graph, that correspond to obstacle sides
@@ -151,7 +180,7 @@ def arePointsCCW(point1,point2,point3):
 		return (((point2[0] - point1[0])*(point3[1]-point2[1]) - (point3[0]-point2[0])*(point2[1]-point1[1])) < 0)
 
 
-#rePointsCCW(line1[0],line1[1],line2[0]))function to check if two line segments are intersecting or not
+#function to check if two line segments are intersecting or not
 def areTwoLinesIntersecting(line1,line2):
 	return ((arePointsCCW(line1[0],line1[1],line2[0]))^(arePointsCCW(line1[0],line1[1],line2[1]))) and ((arePointsCCW(line2[0],line2[1] ,line1[0]))^(arePointsCCW(line2[0],line2[1],line1[1])))	
 ''' FOR TESTING
@@ -169,10 +198,26 @@ def areTwoLinesIntersecting(line1,line2):
 		return (1>2)
 	'''
 		
-getEdges(graph_sample)
 removeIllegalEdges(graphEdge,graph_sample)
 print "Getting graph edges that are obstacle sides : ",getEdgeAsObstacleSide(graph_sample,obstacleEdge)
-print getTestFileInput('test3.mp')
+
+
+
+
+'''First function call reads the .mp file and returns data in the form ['0.0','0.0'...] where all the coordinates
+   are listed individually. Second function call retrieves all the coordinates from above list in following fomat:
+   [(start),(goal),(all obstacles)].
+   Third functionc all gives the list of all the samples as visibility graph '''
+
+print getGraphSamples(getAllCoordinates(getTestFileInput('test3.mp')))  
+
+
+plotSamplePoints(graph_sample)
+getEdges(graph_sample)
+removeIllegalEdges(graphEdge,graph_sample)
+print "****GRAPH EDGES****"
+print graphEdge
+print "Number of EDGES FORMED: ",len(graphEdge)
 #print "EDGES :",graphEdge
 #print "EDGE[0][0][0] : ",graphEdge[0][0][0]
 
