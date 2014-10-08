@@ -32,11 +32,14 @@ def getGraphSamples(node):
 	#			print "node[2][0] : ",node[2][0]
 				graph_sample.append(node[2][j])
 	
+	graph_sample.append(graph_sample[1])
+	graph_sample.remove(graph_sample[1])
 	return graph_sample
 
 
 #print "graph Samples:  ",graph_sample
 #print "Number of samples formed : ",len(graph_sample)
+
 
 
 '''graph_edges = [(graph_sample[0],graph_sample[1]),(graph_sample[0],graph_sample[2]),(graph_sample[0],graph_sample[3]),(graph_sample[0],graph_sample[4]),(graph_sample[0],graph_sample[5])]
@@ -108,12 +111,15 @@ def getAllCoordinates(sample_list):
 
 #Function to get edges, out of all the edges of the graph, that correspond to obstacle sides
 def getEdgeAsObstacleSide(graph_sample,obstacleEdge):
-	for i in range(2,len(graph_sample)):
-        	for j in range(i+1,len(graph_sample)):
-                	obstacleEdge.append([graph_sample[i],graph_sample[j]])
+	obstacleFirstVertex = 0.0
+	j = 0
+	for i in range(1,len(graph_sample)-1,4):
+		obstacleFirstVertex = i
+	    	for j in range(i,i+3):
+                	obstacleEdge.append([graph_sample[j],graph_sample[j+1]])
+		obstacleEdge.append([graph_sample[obstacleFirstVertex],graph_sample[j+1]])
 
-
-	return removeIllegalEdges(obstacleEdge,graph_sample)
+	return obstacleEdge
 	
 	
 
@@ -149,8 +155,9 @@ def slopeOfAnEdge(edge):
 
 
 #function to identify and remove all the illegal edges from the graph
-def removeIllegalEdges(graphEdge,graph_sample):				# currently checking only for the edges
+def removeIllegalEdgesObstacleDiagonal(graphEdge,graph_sample):		# currently checking only for the edges
 	i = 0								# that lie completely inside a polygon
+
 	dynamicLengthGraphEdge = len(graphEdge)
 	while (i < (dynamicLengthGraphEdge-1)):
 		for j,k in zip(range(2,len(graph_sample)-2,2),range(3,len(graph_sample)-2,2)):
@@ -164,6 +171,29 @@ def removeIllegalEdges(graphEdge,graph_sample):				# currently checking only for
 		
 	return graphEdge		
 	
+
+
+#Function to check if an edge coming from outside an obstacle is passing through the obstacle or not.
+def removeIllegalEdgesInsideObstacle(graphEdge,obstacleEdge):
+	i = 0
+	countOfEdgesRemoved = 0
+	lengthOfGraphEdge = len(graphEdge)
+	listOfIndexToBeRemoved = []
+	while(i<lengthOfGraphEdge):
+		for j in range(len(obstacleEdge)):
+#			print "i = ",i,"    and j = ",j
+			if(areTwoLinesIntersecting(graphEdge[i],obstacleEdge[j])):
+				listOfIndexToBeRemoved.append(i)
+#				lengthOfGraphEdge -= 1
+#				print "Graph edge removed is : ",graphEdge[i]
+#				graphEdge.remove(graphEdge[i])
+		i += 1
+	
+	for k in range(len(listOfIndexToBeRemoved)):
+		graphEdge.remove(graphEdge[listOfIndexToBeRemoved[k-countOfEdgesRemoved]])
+		countOfEdgesRemoved += 1
+
+	return graphEdge			
 
 #function to form all possible edges from a list of samples given
 def getEdges(graph_sample):
@@ -197,27 +227,32 @@ def areTwoLinesIntersecting(line1,line2):
 	else:
 		return (1>2)
 	'''
-		
-removeIllegalEdges(graphEdge,graph_sample)
-print "Getting graph edges that are obstacle sides : ",getEdgeAsObstacleSide(graph_sample,obstacleEdge)
 
 
-
+removeIllegalEdgesObstacleDiagonal(graphEdge,graph_sample)
 
 '''First function call reads the .mp file and returns data in the form ['0.0','0.0'...] where all the coordinates
    are listed individually. Second function call retrieves all the coordinates from above list in following fomat:
    [(start),(goal),(all obstacles)].
-   Third functionc all gives the list of all the samples as visibility graph '''
+   Third functionc gives the list of all the samples as visibility graph '''
 
+##Remove the comment after test
 print getGraphSamples(getAllCoordinates(getTestFileInput('test3.mp')))  
 
 
 plotSamplePoints(graph_sample)
 getEdges(graph_sample)
-removeIllegalEdges(graphEdge,graph_sample)
+removeIllegalEdgesObstacleDiagonal(graphEdge,graph_sample)
 print "****GRAPH EDGES****"
 print graphEdge
 print "Number of EDGES FORMED: ",len(graphEdge)
+print "****OBSTACLE EDGES*****"
+print getEdgeAsObstacleSide(graph_sample,obstacleEdge)
+print "Graph edges after removing second category of illegal edges : "
+removeIllegalEdgesInsideObstacle(graphEdge,obstacleEdge)
+print graphEdge
+print "Number of EDGES REMAINED :",len(graphEdge)
+
 #print "EDGES :",graphEdge
 #print "EDGE[0][0][0] : ",graphEdge[0][0][0]
 
@@ -228,11 +263,14 @@ print "Number of EDGES FORMED: ",len(graphEdge)
 #print "Slope of edge ",graphEdge[1]," is ",slopeOfAnEdge(graphEdge[1])
 #plotSamplePoints(graph_sample)
 
-'''All the tests done to test intersection of two lines...runs successfully!!!
-point1 = [1,2]
-point2 = [4,3]
-point3 = [2,6]
-point4 = [4,3]
+#All the tests done to test intersection of two lines...runs successfully!!!
+#Cases where one end point of one of the line segments lies on the other 
+#segment, they are not considered to be in collision
+
+point1 = [0,0]
+point2 = [0.48,0.72]
+point3 = [0.28,0.52]
+point4 = [0.48,0.52]
 line1 = [point1,point2]
 line2 = [point3,point4]
 print line1[0]
@@ -240,8 +278,8 @@ print line1[1]
 print line2[0]
 print line2[1]
 print arePointsCCW(point1,point2,point3)
-print "test : ",arePointsCCW((2,1),(6,4),(3,3))
-print "Are line segments intersecting ",areTwoLinesIntersecting(line1,line2)'''
+#print "test : ",arePointsCCW((2,1),(6,4),(3,3))
+print "Are line segments intersecting ",areTwoLinesIntersecting(line1,line2)
 
 def getSizeOfGraphEdgeList(num):
         factorial = 1
