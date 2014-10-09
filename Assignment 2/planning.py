@@ -141,7 +141,7 @@ def lengthOfAnEdge(edge):
 	x2 = edge[1][0]
 	y2 = edge[1][1]
 	
-	return round(((x2-x1)**2+(y2-y1)**2)**0.5)
+	return round(((x2-x1)**2+(y2-y1)**2)**0.5,2)
 
 
 #calculate the slope of an edge between (x1,y1) and (x2,y2) wrt to x-axis
@@ -188,13 +188,14 @@ def removeIllegalEdgesInsideObstacle(graphEdge,obstacleEdge):
 #				print "Edge that will be removed : ",graphEdge[i]
 				listOfIndexToBeRemoved.append(i)
 #				lengthOfGraphEdge -= 1
-#				print "Graph edge removed is : ",graphEdge[i]
+				#print "Graph edge removed is : ",graphEdge[i]
+				break
 #				graphEdge.remove(graphEdge[i])
 		i += 1
-	
+	print "list of the index to be removed : ",listOfIndexToBeRemoved	
 	for k in range(len(listOfIndexToBeRemoved)):
 		
-		graphEdge.remove(graphEdge[listOfIndexToBeRemoved[k-countOfEdgesRemoved]])
+		graphEdge.remove(graphEdge[listOfIndexToBeRemoved[k]-countOfEdgesRemoved])
 		countOfEdgesRemoved += 1
 	
 	print "countOfEdgesRemoved :",countOfEdgesRemoved
@@ -249,11 +250,12 @@ removeIllegalEdgesObstacleDiagonal(graphEdge,graph_sample)
    Third functionc gives the list of all the samples as visibility graph '''
 
 #Remove the comment after test
-print getGraphSamples(getAllCoordinates(getTestFileInput('test3.mp')))  
+print getGraphSamples(getAllCoordinates(getTestFileInput('test2.mp')))  
 
 
 plotSamplePoints(graph_sample)
 getEdges(graph_sample)
+plotSamplePoints(graph_sample)
 removeIllegalEdgesObstacleDiagonal(graphEdge,graph_sample)
 print "****GRAPH EDGES****"
 print graphEdge
@@ -283,9 +285,9 @@ print "Number of EDGES REMAINED :",len(graphEdge)
 
 '''
 point1 = [0,0]
-point2 = [3,5]
-point3 = [1,7]
-point4 = [3,5]
+point2 = [5,5]
+point3 = [5,5]
+point4 = [5,3]
 line1 = [point1,point2]
 line2 = [point3,point4]
 print line1[0]
@@ -315,6 +317,7 @@ def minDistanceSampleIndex(graph_sampleDistancePrevious):
 
 #function to return a list of neighbouring vertices for a point
 def getNeighbourOfASample(samplePoint,neighbourVertex):
+	print "Getting neighbour for : ",samplePoint
 	for i in range(len(graphEdge)):
 		if(graphEdge[i][0] == samplePoint):
 			neighbourVertex.append(graphEdge[i][1])
@@ -332,18 +335,28 @@ def getIndexOfAPointFromPredGraph(point,graph_sampleDistancePrevious):
 			return i
 
 
+
+#function to check if an element exists in a list
+def doesElementExist(element,targetList):
+	for i in range(len(targetList)):
+		if(targetList[i] == element):
+			return True
+		else:
+			return False
+
+
 #Dijktra's algorithm
 def dijkstra(graph_sample,graphEdge,start,goal):
 	unvisitedSample = []
 	print "len(graph_sample) : ",len(graph_sample)
-	for i in range(len(graph_sample)):
+	for i in range(len(graph_sample)):		#len(graph_sample)
 		if(i == 0):
-			temp = (graph_sample[i],0.0,(9.9,9.9))
+			temp = [(graph_sample[i]),0.0,(9.9,9.9)]
 			graph_sampleDistancePrevious.append(temp)
 			unvisitedSample.append(graph_sample[i])
 
 		if(i > 0):
-			temp = (graph_sample[i],999.9,(9.9,9.9))
+			temp = [(graph_sample[i]),999.9,(9.9,9.9)]
 			graph_sampleDistancePrevious.append(temp)
 			unvisitedSample.append(graph_sample[i])
 		#graph_sampleDistancePrevious[i][0] = graph_sample[i]
@@ -352,31 +365,44 @@ def dijkstra(graph_sample,graphEdge,start,goal):
 	
 #	print "Printing graph_sampleDistancePrevious[0][1] from inside Dijkstra's: ",graph_sampleDistancePrevious[0][1]		
 	k = 0	
-	while(len(unvisitedSample)>0):
-		neighbourVertex = []
+	print "Before entering while loop***************"
+	print "graph with predessor and univisted lists ******************"
+	print graph_sampleDistancePrevious
+	print unvisitedSample
+	while(k<len(unvisitedSample)):
 		minDistanceIndex = minDistanceSampleIndex(graph_sampleDistancePrevious) 		
-		neighbourVertex = getNeighbourOfASample(graph_sampleDistancePrevious[i][0],neighbourVertex)
-		unvisitedSample.remove(graph_sampleDistancePrevious[minDistanceIndex][0])
+#		print "Unvisited graph: ",unvisitedSample
+			
+	#	print "minDistanceIndex  : ",minDistanceIndex
+#		print "graph_sampleDistancePrevious : ",graph_sampleDistancePrevious
+	#	print "graph_sampleDistancePrevious[minDistanceIndex]: ",graph_sampleDistancePrevious[minDistanceIndex]
+	#	print "graph_sampleDistancePrevious[minDistanceIndex][0] : ",graph_sampleDistancePrevious[minDistanceIndex][0]
+		if(doesElementExist(graph_sampleDistancePrevious[minDistanceIndex][0],unvisitedSample)):
+			unvisitedSample.remove(graph_sampleDistancePrevious[minDistanceIndex][0])
+		neighbourVertex = []
+		neighbourVertex = getNeighbourOfASample(graph_sampleDistancePrevious[k][0],neighbourVertex)
+		print "neighbour Vertex for k =  ",k,"is : ",neighbourVertex
 		for i in range(len(neighbourVertex)):
+			print " graph_sampleDistancePrevious[k][0]  ",graph_sampleDistancePrevious[k][0]
+			print " neighbourVertex[i] ",neighbourVertex[i]
+			print "lengthOfAnEdge([graph_sampleDistancePrevious[k][0],neighbourVertex[i]]) : ",lengthOfAnEdge([graph_sampleDistancePrevious[k][0],neighbourVertex[i]])
 			tempDistance = graph_sampleDistancePrevious[k][1] + lengthOfAnEdge([graph_sampleDistancePrevious[k][0],neighbourVertex[i]])			
 			vertexIndexInGraph = getIndexOfAPointFromPredGraph(neighbourVertex[i],graph_sampleDistancePrevious)
 			if(tempDistance < graph_sampleDistancePrevious[vertexIndexInGraph][1]):
+	#			print graph_sampleDistancePrevious
+#				print "graph_sampleDistancePrevious[vertexIndexInGraph][1] ", graph_sampleDistancePrevious[vertexIndexInGraph][1]
+#				print " tempDistance : ",tempDistance
+#				print " vertexIndexInGraph : ",vertexIndexInGraph
 				graph_sampleDistancePrevious[vertexIndexInGraph][1] = tempDistance
 				graph_sampleDistancePrevious[vertexIndexInGraph][2] = graph_sampleDistancePrevious[k][0] 
 			
 			if(graph_sampleDistancePrevious[vertexIndexInGraph][2]==goal):
 				return graph_sampleDistancePrevious
-
-
-				
-		
-		
-	
-
-
+		k += 1
 
 		
 #print "minDistanceSampleIndex(graph_sampleDistancePrevious) ",minDistanceSampleIndex(graph_sampleDistancePrevious)	
 print dijkstra(graph_sample,graphEdge,start,goal)
+print "Finale graph_sampleDistancePrevious list : ",graph_sampleDistancePrevious 
 
 
