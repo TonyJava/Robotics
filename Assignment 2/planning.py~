@@ -276,7 +276,7 @@ removeIllegalEdgesObstacleDiagonal(graphEdge,graph_sample)
    Third functionc gives the list of all the samples as visibility graph '''
 
 #Remove the comment after test
-print getGraphSamples(getAllCoordinates(getTestFileInput('test1.mp')))  
+print getGraphSamples(getAllCoordinates(getTestFileInput('test6.mp')))  
 
 
 plotSamplePoints(graph_sample)
