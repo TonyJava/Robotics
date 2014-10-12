@@ -1,3 +1,4 @@
+import sys
 import math
 import matplotlib.pyplot as plt
 from matplotlib import collections as mc
@@ -52,48 +53,88 @@ def getTestFileInput(nameOfFile):
 	file_handle = open(nameOfFile,'r')
 	lines_list = file_handle.readlines()
 	print "Lines list read by the readlines func : ", lines_list
+	#print "\nlines_list[9] = ",lines_list[9]
 	sample_list = []
 	single_char = ""
 	skipThreeStepFlag = 0
-	for i in range(1, len(lines_list)-1,4):
-		if(skipThreeStepFlag == 1 and len(lines_list)>15):
-			skipThreeStepFlag = 0
-			i = i + 3
-#		print "\nValue of I : ",i
-#		print "\nlen(lines_list[i] : ",(lines_list[i])
-#		print "\nValue of J with each iteration : ",j
-		for j in range((len(lines_list[i])-1)):   		# Replacing (len(lines_list[i])-1) with (len(lines_list[i]))
-			if(i <= 5):
-				if(lines_list[i][j]!=' '):
-					single_char += lines_list[i][j]
-					
-			
-				if(lines_list[i][j] == ' ' or lines_list[i][j+1] == '\n'):
-#					print "Single_char : ",single_char
-					sample_list.append(single_char)
-					single_char = ""
-					
-#				print "(len(lines_list[",i,"]))",len(lines_list[i])
-#			print "sample_list : ",sample_list	
-			if(i>5 and i < (len(lines_list)-2)):		#Replacing len(lines_list)-2) with len(lines_list))
-				for m in range(i,i+4):
-				#	print "m = ",m
-				#       print "len(lines_list[i]) : ",len(lines_list[i])
-					for n in range((len(lines_list[m])-1)):
-						#print "n : ",n
-						if(lines_list[m][n]!=' '):
-							single_char += lines_list[m][n]
-						#       print "m = ",m,"and n = ",n,"value of single_char is = ",single_char 
-						if(lines_list[m][n] == ' ' or lines_list[m][n+1] == '\n'):
-							sample_list.append(single_char)
-							single_char = ""
-
-				skipThreeStepFlag = 1
+	if(nameOfFile != 'test4.mp'):
+		for i in range(1, len(lines_list)-1,4):
+			if(skipThreeStepFlag == 1 and len(lines_list)>15):
+				skipThreeStepFlag = 0
+				i = i + 3
+			print "\nValue of I : ",i
+			if(i>len(lines_list)-1):
 				break
-			
-		if(i == (len(lines_list) - (len(lines_list)%4))):
-	                break
+			print "\nlen(lines_list[",i,"] : ",(lines_list[i])
 
+			for j in range((len(lines_list[i])-1)):   		# Replacing (len(lines_list[i])-1) with (len(lines_list[i]))
+				print "\nValue of J with each iteration : ",j
+				if(i <= 5):
+					if(lines_list[i][j]!=' '):
+						single_char += lines_list[i][j]
+					
+			
+					if(lines_list[i][j] == ' ' or lines_list[i][j+1] == '\n'):
+	#					print "Single_char : ",single_char
+						sample_list.append(single_char)
+						single_char = ""
+					
+	#				print "(len(lines_list[",i,"]))",len(lines_list[i])
+	#			print "sample_list : ",sample_list	
+				if(i>5 and i < (len(lines_list)-2)):		#Replacing len(lines_list)-2) with len(lines_list))
+					for m in range(i,i+4):
+	#					print "m = ",m
+					#       print "len(lines_list[i]) : ",len(lines_list[i])
+						for n in range((len(lines_list[m])-1)):
+	#						print "n : ",n
+							if(lines_list[m][n]!=' '):
+								single_char += lines_list[m][n]
+							#       print "m = ",m,"and n = ",n,"value of single_char is = ",single_char 
+							if(lines_list[m][n] == ' ' or lines_list[m][n+1] == '\n'):
+	#							print "\nSingle char when checking for obstacle : ",single_char
+							#	if(single_char != '<\\Obstacles>'):
+								sample_list.append(single_char)
+								single_char = ""
+
+					skipThreeStepFlag = 1
+					break
+			
+			if(i == (len(lines_list) - (len(lines_list)%4))):
+			        break
+	
+	if(nameOfFile == 'test4.mp' or nameOfFile == 'test5.mp'):
+		#print "\nlines list when reading 4th input : ",lines_list
+				
+		for i in range(1,6,4):
+			for j in range((len(lines_list[i])-1)):
+				if(lines_list[i][j]!=' '):
+						single_char += lines_list[i][j]
+					
+				if(lines_list[i][j] == ' ' or lines_list[i][j+1] == '\n'):
+	#					print "Single_char : ",single_char
+						sample_list.append(single_char)
+						single_char = ""
+			
+		if(nameOfFile == 'test4.mp'):
+			maxIndex = 51
+		elif(nameOfFile == 'test5.mp'):
+			maxIndex = 58
+		for i in range(9,maxIndex,7):
+#			print "Inside first for\n"
+			for j in range(i,i+4):
+				#print "Inside second for\n"
+				for m in range(0,len(lines_list[j])-1):
+					#print "Inside third for\n"
+					#print "i = ",i,"  j = ",j,"  m =  ",m
+  					if(lines_list[j][m]!=' '):
+						single_char += lines_list[j][m]
+					#       print "m = ",m,"and n = ",n,"value of single_char is = ",single_char 
+					if(lines_list[j][m] == ' ' or lines_list[j][m+1] == '\n'):
+						#print "\nSingle char when checking for obstacle : ",single_char
+					#	if(single_char != '<\\Obstacles>'):
+						sample_list.append(single_char)
+						single_char = ""
+		print "sample list when test4.mp is read : ",sample_list			
 
 	return sample_list
 
@@ -103,16 +144,21 @@ def getAllCoordinates(sample_list):
 	
 	nodes = []
 	skipNextIterationFlag = 0			# to skip one iteration so that coordinates of obstacles 
-							# can be shown as combinations of (x,y)
+	print "\nsample list : ",sample_list		# can be shown as combinations of (x,y)
 	for i in range(len(sample_list)):
 		if(skipNextIterationFlag == 1):
 			skipNextIterationFlag = 0
 			continue
 		if(i<=2):
 			start.append(float(sample_list[i]))
+			print "Start : ",start
 		elif(i>2 and i <=5):
 			goal.append(float(sample_list[i]))
+			print "Goal : ",goal
 		elif(i>5):
+			print "i : ",i
+			print "sample_list[",i,"] : ",sample_list[i]
+			print "sample_list[",i+1,"] : ",sample_list[i+1]
 			obstacles.append((float(sample_list[i]),float(sample_list[i+1])))	
 			skipNextIterationFlag = 1
 	
@@ -275,9 +321,12 @@ removeIllegalEdgesObstacleDiagonal(graphEdge,graph_sample)
    [(start),(goal),(all obstacles)].
    Third functionc gives the list of all the samples as visibility graph '''
 
-#Remove the comment after test
-print getGraphSamples(getAllCoordinates(getTestFileInput('test6.mp')))  
 
+arg1 = sys.argv[1]
+#Remove the comment after test
+#sample_list = getTestFileInput(arg1)
+#print "\n Sample List : ",sample_list
+print getGraphSamples(getAllCoordinates(getTestFileInput(arg1)))
 
 plotSamplePoints(graph_sample)
 getEdges(graph_sample)
@@ -389,8 +438,18 @@ def getPathFromDijkstraList(graph_sampleDistancePrevious,node,start):
 			if(graph_sampleDistancePrevious[i][2] != start):
 				getPathFromDijkstraList(graph_sampleDistancePrevious,graph_sampleDistancePrevious[i][2],start)
 			
-	
+		
 
+#function to reverse the path in final list
+def reversingPath():
+	global finalPath
+	temp = []
+	i = len(finalPath)-1
+	while(i>=0):
+		temp.append(finalPath[i])
+		i -= 1
+	finalPath = temp
+	return finalPath
 
 
 
@@ -461,6 +520,97 @@ print "\n Start is: ",startCoordinates
 path = []
 print "\nFinal path after Dijktras is : " 
 getPathFromDijkstraList(graph_sampleDistancePrevious,goalCoordinates,startCoordinates)
+reversingPath()
 print finalPath
  
 
+
+##Identifying the path with turns (arcs)
+
+
+finalPathWithOrientation = []
+#functiont to get the list of orientation for path points
+def getOrientationForPathPoints():
+	global finalPath
+	global finalPathWithOrientation
+	global start
+	global goal
+	for i in range(len(finalPath)):
+		if(i==0):
+			finalPathWithOrientation.append([finalPath[i],start[2]])
+		elif(i==len(finalPath)-1):
+			finalPathWithOrientation.append([finalPath[i],goal[2]])
+	
+		else:
+			finalPathWithOrientation.append([finalPath[i],99.99])
+	return finalPathWithOrientation
+
+
+pathWithArcPoints = []
+pathLength = 0.0
+
+#function to get path with arc points
+def getPathWithArc():
+	global finalPathWithOrientation
+	global pathWithArcPoints
+	global goal	
+	global pathLength	
+	for i in range(len(finalPathWithOrientation)-1):
+		pathWithArcPoints.append(finalPathWithOrientation[i])
+		
+		#finding end point for first arc
+		theta_1 = finalPathWithOrientation[i][1]
+		print "\ntheta_1 : ",theta_1
+		edge = (finalPathWithOrientation[i][0],finalPathWithOrientation[i+1][0])
+		theta_2 = slopeOfAnEdge(edge)
+		if(theta_2-theta_1<0):
+			delta_theta = -1* (theta_2-theta_1)
+		else:
+			delta_theta = theta_2 - theta_1
+		print "\ndelta_theta 1: ",delta_theta
+		r = (0.1/(2**0.5))
+		x1 = finalPathWithOrientation[i][0][0] + r*math.sin(delta_theta/2)*math.cos(theta_1+ delta_theta/2)
+		print "\nx1 : ",x1
+		print "\nfinalPathWithOrientation[i][0][0] : ",finalPathWithOrientation[i][0][0]
+		y1 = finalPathWithOrientation[i][0][1] + r*math.sin(delta_theta/2)*math.sin(theta_1+ delta_theta/2)
+		print "\ny1 : ",y1
+		orientation = theta_2
+		pathWithArcPoints.append([(x1,y1),orientation])
+		arcLength1 = r*delta_theta
+
+		#finding the start point of the second arc since end point is known - the i+1 point
+		edge = (finalPathWithOrientation[i][0],finalPathWithOrientation[i+1][0])
+		theta_1 = slopeOfAnEdge(edge)
+		print " \n finalPathWithOrientation[i+1][0] : ",finalPathWithOrientation[i+1][0]
+		print " \ngoal[0] : ",(goal[0],goal[1]) 
+		if(finalPathWithOrientation[i+1][0] == (goal[0],goal[1])):
+			print "\nTheta 2 acquired as : ",finalPathWithOrientation[i+1][1]
+			theta_2 = finalPathWithOrientation[i+1][1]
+		else:
+			edge = (finalPathWithOrientation[i][0],finalPathWithOrientation[i+1][0])
+			theta_2 = 2*slopeOfAnEdge(edge)
+			
+	
+		delta_theta = theta_2 - theta_1
+		print "\ndelta_theta 2: ",delta_theta
+		r = (0.1/(2**0.5))
+		x2 = finalPathWithOrientation[i+1][0][0] - r*math.sin(delta_theta/2)*math.cos(theta_1+ delta_theta/2)
+		y2 = finalPathWithOrientation[i+1][0][1] - r*math.sin(delta_theta/2)*math.sin(theta_1+ delta_theta/2)
+		orientation = theta_2/2
+		pathWithArcPoints.append([(x2,y2),orientation])
+		arcLength2 = r*delta_theta
+
+		pathLength = arcLength1 + arcLength2 + lengthOfAnEdge(((x1,y1),(x2,y2)))
+		pathWithArcPoints.append([finalPathWithOrientation[i+1][0],theta_2])
+		
+		
+		
+	return 		
+	
+
+print "\n****************************\n"
+print "Making final path list with orientation : ",getOrientationForPathPoints()
+print "\n****************************\n"
+getPathWithArc()
+print "Path with arc points : ", pathWithArcPoints
+print "\nLength of the arc : ",pathLength
